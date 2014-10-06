@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var util = require('util');
 
+var parseGit = require('github-url-from-git');
 var ini = require('ini');
 var Promise = require('bluebird');
 
@@ -24,20 +25,7 @@ function getUrl(file) {
 
     return origin.url;
   })
-  .then(function (originUrl) {
-    var githubPrefixes = ['git@github.com:', 'https://github.com/'];
-    var githubSuffix = '.git';
-
-    var matchingPrefixes = githubPrefixes.filter(function (prefix) {
-      return originUrl.indexOf(prefix) === 0;
-    });
-
-    if (!matchingPrefixes || !matchingPrefixes[0]) {
-      throw new Error('Error: prefix not found' + originUrl);
-    }
-
-    return 'https://github.com/' + originUrl.slice(matchingPrefixes[0].length, -githubSuffix.length);
-  });
+  .then(parseGit);
 
 }
 
